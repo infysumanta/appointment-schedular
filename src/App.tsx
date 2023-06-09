@@ -1,5 +1,7 @@
+import Schedular from './component/Schedular';
+
 function App() {
-  return <></>;
+  return <Schedular />;
 }
 
 export default App;
