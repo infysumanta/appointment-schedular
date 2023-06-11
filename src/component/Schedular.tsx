@@ -24,29 +24,29 @@ const Scheduler = () => {
         },
       ],
     },
-    {
-      day: 'Monday',
-      slots: [
-        {
-          startTime: '00:00',
-          endTime: '00:15',
-        },
-      ],
-    },
-    {
-      day: 'Tuesday',
-      slots: [
-        {
-          startTime: '00:00',
-          endTime: '00:15',
-        },
-      ],
-    },
+    // {
+    //   day: 'Monday',
+    //   slots: [
+    //     {
+    //       startTime: '00:00',
+    //       endTime: '00:15',
+    //     },
+    //   ],
+    // },
+    // {
+    //   day: 'Tuesday',
+    //   slots: [
+    //     {
+    //       startTime: '00:00',
+    //       endTime: '00:15',
+    //     },
+    //   ],
+    // },
   ]);
   const timeSlots: string[] = [];
 
   while (startTime.isSameOrBefore(endTime)) {
-    timeSlots.push(startTime.format('hh:mm a'));
+    timeSlots.push(startTime.format('HH:mm'));
     startTime.add(15, 'minutes');
   }
 
@@ -138,10 +138,10 @@ interface TimeSchedularProps {
 
 const TimeSchedular: React.FC<TimeSchedularProps> = ({ time, timeSlots }) => {
   return (
-    <Select value={time}>
+    <Select defaultValue={time}>
       {timeSlots.map((item) => (
         <option key={item} value={item}>
-          {item}
+          {moment(item, 'HH:mm').format('hh:mm a')}
         </option>
       ))}
     </Select>
