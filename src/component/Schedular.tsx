@@ -4,25 +4,45 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Flex,
   Select,
-  Switch,
   Text,
 } from '@chakra-ui/react';
 import moment from 'moment';
+import { useState } from 'react';
 
-const weekDays = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
-
-const Schedular = () => {
+const Scheduler = () => {
   const startTime = moment('00:00', 'HH:mm');
   const endTime = moment('23:59', 'HH:mm');
+  const [dailySlots, setDailySlots] = useState([
+    {
+      day: 'Sunday',
+      slots: [
+        {
+          startTime: '00:00',
+          endTime: '00:15',
+        },
+      ],
+    },
+    {
+      day: 'Monday',
+      slots: [
+        {
+          startTime: '00:00',
+          endTime: '00:15',
+        },
+      ],
+    },
+    {
+      day: 'Tuesday',
+      slots: [
+        {
+          startTime: '00:00',
+          endTime: '00:15',
+        },
+      ],
+    },
+  ]);
   const timeSlots: string[] = [];
 
   while (startTime.isSameOrBefore(endTime)) {
@@ -30,28 +50,56 @@ const Schedular = () => {
     startTime.add(15, 'minutes');
   }
 
+  const addSlots = (day: string) => {
+    const newDailySlots = dailySlots.map((dailySlot) => {
+      if (dailySlot.day === day) {
+        return {
+          ...dailySlot,
+          slots: [
+            ...dailySlot.slots,
+            {
+              startTime: '00:00',
+              endTime: '00:15',
+            },
+          ],
+        };
+      }
+      return dailySlot;
+    });
+    setDailySlots(newDailySlots);
+  };
+
   return (
-    <Box width='50%' margin='10'>
+    <Box width='50%' margin='10px'>
       <Card>
         <CardHeader>
-          <Text as='b' fontSize='30'>
-            Schedular
+          <Text as='b' fontSize='30px'>
+            Scheduler
           </Text>
         </CardHeader>
         <CardBody>
           <Box display='flex' flexDirection='column'>
-            {weekDays.map((day) => (
+            {dailySlots.map((dailySlot) => (
               <Box
-                key={day}
+                key={dailySlot.day}
                 display='flex'
-                alignItems='center'
-                marginBottom='2'
+                alignItems='flex-start'
+                marginBottom='10px'
+                justifyContent='space-between'
               >
-                <Switch size='md' marginRight='2' />
-                <Text fontSize='20'>{day}</Text>
-                <TimerSchedular timeSlots={timeSlots} />
-                <TimerSchedular timeSlots={timeSlots} />
-                <Button marginLeft='2'>+</Button>
+                <Text fontSize='20px'>{dailySlot.day}</Text>
+                <Flex flexDirection='column'>
+                  {dailySlot.slots.map((slot) => (
+                    <WeekDaysWithSlots
+                      key={`${slot.startTime}-${slot.endTime}`}
+                      slot={slot}
+                      timeSlots={timeSlots}
+                    />
+                  ))}
+                </Flex>
+                <Button onClick={() => addSlots(dailySlot.day)} size='sm'>
+                  +
+                </Button>
               </Box>
             ))}
           </Box>
@@ -61,13 +109,36 @@ const Schedular = () => {
   );
 };
 
-interface TimerSchedularProps {
+export default Scheduler;
+
+interface WeekDaysWithSlotsProps {
+  slot: {
+    startTime: string;
+    endTime: string;
+  };
   timeSlots: string[];
 }
 
-const TimerSchedular: React.FC<TimerSchedularProps> = ({ timeSlots }) => {
+const WeekDaysWithSlots: React.FC<WeekDaysWithSlotsProps> = ({
+  slot,
+  timeSlots,
+}) => {
   return (
-    <Select marginLeft='2'>
+    <Flex flexDirection='row' key={`${slot.startTime}-${slot.endTime}`}>
+      <TimeSchedular time={slot.startTime} timeSlots={timeSlots} />
+      <TimeSchedular time={slot.endTime} timeSlots={timeSlots} />
+    </Flex>
+  );
+};
+
+interface TimeSchedularProps {
+  time: string;
+  timeSlots: string[];
+}
+
+const TimeSchedular: React.FC<TimeSchedularProps> = ({ time, timeSlots }) => {
+  return (
+    <Select value={time}>
       {timeSlots.map((item) => (
         <option key={item} value={item}>
           {item}
@@ -76,5 +147,3 @@ const TimerSchedular: React.FC<TimerSchedularProps> = ({ timeSlots }) => {
     </Select>
   );
 };
-
-export default Schedular;
